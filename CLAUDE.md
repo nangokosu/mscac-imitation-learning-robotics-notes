@@ -107,6 +107,53 @@ Either way, the treatment must explicitly cover:
   "iteratively denoise" design, against a Mixture Density Network's "predict distribution
   parameters directly" design.
 
+## Grouping architecture families, not paper order
+
+Notes must teach concepts and architectures ground-up, in logical groupings — not read as a
+sequence of paper summaries ordered by when the lecture happens to introduce each one. This is the
+lesson of Week 1's §6/§7 restructuring (EBM policies and action-chunking policies were originally
+scattered across unrelated sections purely because their source papers first appeared under
+different lecture topics) and applies to every future week:
+
+- **When two or more of a week's required-reading papers implement different versions of the same
+  underlying idea** (e.g. several energy-based-model variants; several action-chunking
+  architectures), group and teach them together as one shared unit, even if their source papers
+  were originally introduced under different lecture topics (e.g. one under hardware/data
+  collection, another under generative policies) — rather than following the order the
+  lecture/syllabus happens to introduce the papers in. This explicitly supersedes "Explaining novel
+  neural network architectures" above's default of folding an architecture into its own paper's
+  Paper Breakdown, for this specific case: pull the shared architecture teaching into one dedicated
+  subsection placed before the first relevant Paper Breakdown, have each paper's own Paper
+  Breakdown reference that shared subsection instead of re-deriving the mechanism, and keep only
+  genuinely paper-specific details (its own loss formula, its own hyperparameters/results) inline
+  in that paper's own breakdown.
+- **Diagrams illustrating an architecture must show the concrete data flow** — label exactly what
+  goes in, what comes out, and how the output becomes robot behavior — not an abstract concept
+  illustration. When an architecture predicts a multi-step *sequence* (e.g. a chunk of future
+  actions), the diagram must also make temporal ordering visible: which output slot corresponds to
+  which future timestep, and — when overlapping predictions get combined — that they're aligned by
+  absolute timestep, not by position within their own chunk.
+- **A mechanism referenced by name across multiple papers without being fully explained anywhere**
+  (the concrete example that prompted this rule: "negative sampling," named in both the IBC and
+  Ranking-NCE Week 1 breakdowns but never explained) must get a full, from-scratch, plain-language
+  explanation with a worked example the first time it's used — a Wikipedia link plus a one-clause
+  gloss is not sufficient on its own.
+- **Build bottom-up from the assumed MLP/CNN baseline, never top-down from the named concept — and
+  treat every piece beyond that baseline as genuinely advanced, not a small step past it.** The
+  target reader knows ordinary MLPs/CNNs, backprop, and standard supervised training loops and
+  nothing more (see "Who these notes are for") — this needs an explicit authoring check beyond just
+  stating the assumption: an autoencoder, a variational/conditional autoencoder, a
+  transformer/self-attention layer, a diffusion/denoising process, and a contrastive/InfoNCE
+  objective are each themselves unfamiliar, advanced ideas to this reader — doubly so when applied
+  outside the text/image contexts they're normally taught in — not one-clause extensions of the
+  MLP/CNN baseline. Each gets full from-scratch treatment — its own plain-language analogy before
+  formalism, same as any other new term under "Who these notes are for" — showing what problem it
+  solves and what concretely changes relative to what the reader already has, with an explicit
+  bridge whenever it's applied to this course's non-standard data (e.g. what plays the role a
+  word/token plays in a transformer, here). Naming the concept and then glossing what it does,
+  however accurately, is the failure mode to avoid; so is treating the concept as a minor
+  incremental step just because it's built out of MLP layers underneath.
+
 ## Source material
 
 - Course site: https://csc2626.github.io/2026F_website/ (schedule and full syllabus on `index.html`;

@@ -47,11 +47,11 @@ re-derived.
 ## Writing procedure — concepts and architectures first, papers as evidence
 
 These notes teach concepts and neural-network architectures ground-up from first principles as the
-primary content of every week — a required-reading paper never organizes the notes. Instead, a
-paper's role is to *anchor* an already-taught concept or architecture: it supplies the concrete
-implementation, numbers, and results that make the abstract idea concrete. Notes are never drafted
-directly off the slides, or assembled as a sequence of paper summaries stitched end to end. For each
-new week:
+primary content of every week — no paper, required or optional/appendix, ever organizes the notes.
+Instead, a paper's role is to *anchor* an already-taught concept or architecture: it supplies the
+concrete implementation, numbers, and results that make the abstract idea concrete. Notes are never
+drafted directly off the slides, or assembled as a sequence of paper summaries stitched end to end.
+For each new week:
 
 1. **Identify all concepts the lecture actually depends on**, prioritizing anything a current or
    upcoming assignment leans on for the deepest treatment, even if the lecture itself only mentions
@@ -68,9 +68,13 @@ new week:
 ## Paper Breakdowns
 
 Week 1 (and most weeks after it) leans heavily on primary papers — going through them to understand
-key concepts and training methods is a defining part of this course. Whenever the lecture leans on
-a required-reading paper, that paper gets its own clearly-marked subsection, placed inline where the
-narrative first needs it (never in a trailing bibliography dump), with this fixed shape.
+key concepts and training methods is a defining part of this course. **Every paper linked for a
+given week counts as core material — required and optional/appendix alike, with no distinction in
+how thoroughly these notes cover it.** "Optional" describes how the lecture frames a reading, not
+how much depth it gets here: whenever the lecture leans on *any* linked paper, required or
+appendix, that paper gets its own clearly-marked subsection, placed inline where the narrative first
+needs it (never in a trailing bibliography dump, and never left as a bare name-drop the way
+appendix methods sometimes are in the slides themselves), with this fixed shape.
 
 A Paper Breakdown is never the primary structuring device (see "Writing procedure" above): its job
 is only to anchor already-taught material with this specific paper's concrete numbers,
@@ -91,10 +95,10 @@ The fixed shape:
 
 ## Explaining novel neural network architectures
 
-Whenever a lecture or required-reading paper introduces a new, novel, or meaningfully-improved
-network architecture beyond the ordinary MLP/CNN/standard-training-loop baseline already assumed
-known (see "Who these notes are for"), that architecture gets dedicated treatment, inline at first
-use:
+Whenever a lecture or any covered paper (required or optional/appendix) introduces a new, novel, or
+meaningfully-improved network architecture beyond the ordinary MLP/CNN/standard-training-loop
+baseline already assumed known (see "Who these notes are for"), that architecture gets dedicated
+treatment, inline at first use:
 
 - If the architecture is the paper's own contribution, fold the treatment into that Paper
   Breakdown's "Method & training procedure" subsection.
@@ -151,10 +155,10 @@ lesson of Week 1's §6/§7 restructuring (EBM policies and action-chunking polic
 scattered across unrelated sections purely because their source papers first appeared under
 different lecture topics) and applies to every future week:
 
-- **When two or more of a week's required-reading papers implement different versions of the same
-  underlying idea** (e.g. several energy-based-model variants; several action-chunking
-  architectures), group and teach them together as one shared unit, even if their source papers
-  were originally introduced under different lecture topics (e.g. one under hardware/data
+- **When two or more of a week's covered papers (required or optional/appendix) implement different
+  versions of the same underlying idea** (e.g. several energy-based-model variants; several
+  action-chunking architectures), group and teach them together as one shared unit, even if their
+  source papers were originally introduced under different lecture topics (e.g. one under hardware/data
   collection, another under generative policies) — rather than following the order the
   lecture/syllabus happens to introduce the papers in. This explicitly supersedes "Explaining novel
   neural network architectures" above's default of folding an architecture into its own paper's
@@ -177,7 +181,7 @@ together is not a reason to explain any one of them more thinly.
 
 - Course site: https://csc2626.github.io/2026F_website/ (schedule and full syllabus on `index.html`;
   lecture slides under `/lecs/wNN/lecNN.html`; required/optional readings linked per-topic under
-  `index.html#week-N`).
+  `index.html#week-N`). Fetch and cover *both* lists in full — see "Paper Breakdowns" above.
 - Fetch papers directly (arXiv abstract/PDF, ACM/project pages) rather than relying on the lecture's
   own summary of them — a Paper Breakdown's claims must trace to the paper itself.
 - Skip course-logistics slides (schedule, grading, staff, policies) — notes start from the first

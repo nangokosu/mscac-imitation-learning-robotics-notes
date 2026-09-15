@@ -44,7 +44,7 @@ definition, but the original stays as a beginner anchor.
 - **[Degrees of freedom (DOF)](https://en.wikipedia.org/wiki/Degrees_of_freedom_(mechanics))** — the number of independent ways a mechanism can move.
 - **[Forward / inverse kinematics](https://en.wikipedia.org/wiki/Robot_kinematics)** — forward: computing end-effector position from joint angles; inverse: solving for the joint angles that reach a desired end-effector position.
 - **Joint space vs. task space** — describing a robot's configuration by its own joint angles (joint space) versus by where its end-effector sits in the world (task space).
-- **[Workspace](https://en.wikipedia.org/wiki/Robot_end_effector)** — the full set of positions an end-effector can physically reach.
+- **[Workspace](https://en.wikipedia.org/wiki/Robot_kinematics)** — the full set of positions an end-effector can physically reach.
 - **[Proprioception](https://en.wikipedia.org/wiki/Proprioception)** — a robot's internal sense of its own joint angles/velocities, as opposed to external sensing like vision.
 - **[RGB-D camera](https://en.wikipedia.org/wiki/RGB-D_camera)** — a camera producing an aligned color image plus a per-pixel depth map.
 - **[Telerobotics / teleoperation](https://en.wikipedia.org/wiki/Telerobotics)** — real-time human control of a robot, the standard way manipulation demonstrations are collected.

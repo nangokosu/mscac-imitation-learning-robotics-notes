@@ -46,9 +46,15 @@ re-derived.
   robots, an energy landscape, error-growth curves, etc.) with a diagram proactively, whenever prose
   alone would be hard to picture — see "Published artifact" below for how these are built.
 
-## Writing procedure — concepts/math first, narrative second
+## Writing procedure — concepts and architectures first, papers as evidence
 
-Notes are never drafted directly off the slides. For each new week:
+These notes teach concepts and neural-network architectures on their own terms, ground-up from
+foundational ML/NN principles, as the primary content of every week — a required-reading paper is
+never the thing that organizes the notes. A paper's role is to *anchor* a concept or architecture
+already taught from first principles: it supplies the concrete implementation details, the actual
+numbers, and the specific results that make an abstract idea real, applied to one specific case.
+Notes are never drafted directly off the slides, and never assembled as a sequence of paper
+summaries stitched end to end. For each new week:
 
 1. **Identify all concepts the lecture actually depends on**, prioritizing anything a current or
    upcoming assignment leans on for the deepest treatment, even if the lecture itself only mentions
@@ -67,7 +73,17 @@ Notes are never drafted directly off the slides. For each new week:
 Week 1 (and most weeks after it) leans heavily on primary papers — going through them to understand
 key concepts and training methods is a defining part of this course. Whenever the lecture leans on
 a required-reading paper, that paper gets its own clearly-marked subsection, placed inline where the
-narrative first needs it (never in a trailing bibliography dump), with this fixed shape:
+narrative first needs it (never in a trailing bibliography dump), with this fixed shape.
+
+A Paper Breakdown is never the primary structuring device — per "Writing procedure" above, the
+concept or architecture it's about is taught from the ground up *before* the breakdown, and the
+breakdown's job is only to anchor that already-taught material with this specific paper's concrete
+numbers, implementation, and results. If a week's notes end up reading as a sequence of Paper
+Breakdowns stitched together with little concept-teaching in between, that's a signal the
+concept-first procedure wasn't actually followed for that paper's underlying idea, and the section
+needs a from-scratch conceptual lead-in written first.
+
+The fixed shape:
 
 - **Problem/motivation** — what gap or failure mode the paper is responding to.
 - **Key idea/innovation** — the one-sentence core insight.
@@ -106,6 +122,34 @@ Either way, the treatment must explicitly cover:
   against an ordinary regression head's "predict-directly" design, against a diffusion model's
   "iteratively denoise" design, against a Mixture Density Network's "predict distribution
   parameters directly" design.
+- **Build bottom-up from the assumed MLP/CNN baseline, never top-down from the named concept — and
+  treat every piece beyond that baseline as genuinely advanced, not a small step past it.** The
+  target reader knows ordinary MLPs/CNNs, backprop, and standard supervised training loops and
+  nothing more (see "Who these notes are for"). An autoencoder, a variational/conditional
+  autoencoder, a transformer/self-attention layer, a diffusion/denoising process, a
+  contrastive/InfoNCE objective — each is itself an unfamiliar, advanced idea to this reader,
+  doubly so when applied outside the text/image contexts it's normally taught in, never a
+  one-clause extension of the MLP/CNN baseline. Give each its own plain-language analogy before
+  formalism (same as any other new term under "Who these notes are for"), showing what problem it
+  solves and what concretely changes relative to what the reader already has, with an explicit
+  bridge whenever it's applied to this course's non-standard data (e.g. what plays the role a
+  word/token plays in a transformer, here). Naming the concept and then glossing what it does,
+  however accurately, is the failure mode to avoid; so is treating it as a minor incremental step
+  just because it's built out of MLP layers underneath.
+- **Use diagrams liberally, not as occasional decoration.** Favor a diagram wherever it would show
+  any of the following, and default to including one rather than leaving it to prose alone:
+  - The architecture concretely **applied to the actual robotics task** — real inputs (a camera
+    image, a joint-state reading, etc.) flowing through the network to a real robot action, not an
+    abstract box diagram detached from what the robot is actually doing.
+  - The paper's **core conceptual innovation in one picture** — e.g. an energy landscape's two
+    separate valleys versus a regression surface forced to interpolate between them.
+  - A **side-by-side contrast against a standard or baseline policy network**, so the reader sees
+    exactly what structurally changed (what moved from output to input, what got added, what got
+    removed) rather than having to infer it from prose.
+  - When the architecture predicts a multi-step *sequence* (e.g. a chunk of future actions), make
+    temporal ordering visible on the diagram itself: which output slot corresponds to which future
+    timestep, and — when overlapping predictions get combined — that they're aligned by absolute
+    timestep, not by position within their own chunk.
 
 ## Grouping architecture families, not paper order
 
@@ -127,32 +171,15 @@ different lecture topics) and applies to every future week:
   Breakdown reference that shared subsection instead of re-deriving the mechanism, and keep only
   genuinely paper-specific details (its own loss formula, its own hyperparameters/results) inline
   in that paper's own breakdown.
-- **Diagrams illustrating an architecture must show the concrete data flow** — label exactly what
-  goes in, what comes out, and how the output becomes robot behavior — not an abstract concept
-  illustration. When an architecture predicts a multi-step *sequence* (e.g. a chunk of future
-  actions), the diagram must also make temporal ordering visible: which output slot corresponds to
-  which future timestep, and — when overlapping predictions get combined — that they're aligned by
-  absolute timestep, not by position within their own chunk.
 - **A mechanism referenced by name across multiple papers without being fully explained anywhere**
   (the concrete example that prompted this rule: "negative sampling," named in both the IBC and
   Ranking-NCE Week 1 breakdowns but never explained) must get a full, from-scratch, plain-language
   explanation with a worked example the first time it's used — a Wikipedia link plus a one-clause
   gloss is not sufficient on its own.
-- **Build bottom-up from the assumed MLP/CNN baseline, never top-down from the named concept — and
-  treat every piece beyond that baseline as genuinely advanced, not a small step past it.** The
-  target reader knows ordinary MLPs/CNNs, backprop, and standard supervised training loops and
-  nothing more (see "Who these notes are for") — this needs an explicit authoring check beyond just
-  stating the assumption: an autoencoder, a variational/conditional autoencoder, a
-  transformer/self-attention layer, a diffusion/denoising process, and a contrastive/InfoNCE
-  objective are each themselves unfamiliar, advanced ideas to this reader — doubly so when applied
-  outside the text/image contexts they're normally taught in — not one-clause extensions of the
-  MLP/CNN baseline. Each gets full from-scratch treatment — its own plain-language analogy before
-  formalism, same as any other new term under "Who these notes are for" — showing what problem it
-  solves and what concretely changes relative to what the reader already has, with an explicit
-  bridge whenever it's applied to this course's non-standard data (e.g. what plays the role a
-  word/token plays in a transformer, here). Naming the concept and then glossing what it does,
-  however accurately, is the failure mode to avoid; so is treating the concept as a minor
-  incremental step just because it's built out of MLP layers underneath.
+
+The bottom-up-baseline and liberal-diagram rules in "Explaining novel neural network architectures"
+above apply here too, on every architecture in the grouped family — grouping several papers
+together is not a reason to explain any one of them more thinly.
 
 ## Source material
 

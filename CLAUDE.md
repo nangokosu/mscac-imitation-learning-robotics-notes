@@ -30,7 +30,6 @@ re-derived.
 - Put definitions inline where a term first appears, not only in the glossary — a reader should
   never have to jump elsewhere to follow the current sentence. The glossary is a lookup-speed index;
   its entry can be a shorter echo of the inline definition.
-- Give a plain-language analogy before the formal definition.
 - For formulas, show the derivation intuition — why the formula has that shape — not just the
   result.
 - Cross-reference where a concept reappears or gets formalized in a later week.
@@ -39,22 +38,20 @@ re-derived.
   meant.
 - **No dense blocks of text** — a long unbroken paragraph signals a concept needs restructuring, not
   just tighter prose. Split multi-idea paragraphs at idea boundaries, pull worked examples and
-  algorithm walkthroughs into their own callout-style blocks, use lists for enumerations (e.g.
-  DAgger's algorithm steps, the five parts of a Paper Breakdown), and add a diagram wherever one
-  would carry weight prose is carrying alone.
+  algorithm walkthroughs into their own callout-style blocks, and use lists for enumerations (e.g.
+  DAgger's algorithm steps, the five parts of a Paper Breakdown).
 - Illustrate geometric/procedural ideas (the DAgger interaction loop, embodiment transfer across
   robots, an energy landscape, error-growth curves, etc.) with a diagram proactively, whenever prose
   alone would be hard to picture — see "Published artifact" below for how these are built.
 
 ## Writing procedure — concepts and architectures first, papers as evidence
 
-These notes teach concepts and neural-network architectures on their own terms, ground-up from
-foundational ML/NN principles, as the primary content of every week — a required-reading paper is
-never the thing that organizes the notes. A paper's role is to *anchor* a concept or architecture
-already taught from first principles: it supplies the concrete implementation details, the actual
-numbers, and the specific results that make an abstract idea real, applied to one specific case.
-Notes are never drafted directly off the slides, and never assembled as a sequence of paper
-summaries stitched end to end. For each new week:
+These notes teach concepts and neural-network architectures ground-up from first principles as the
+primary content of every week — a required-reading paper never organizes the notes. Instead, a
+paper's role is to *anchor* an already-taught concept or architecture: it supplies the concrete
+implementation, numbers, and results that make the abstract idea concrete. Notes are never drafted
+directly off the slides, or assembled as a sequence of paper summaries stitched end to end. For each
+new week:
 
 1. **Identify all concepts the lecture actually depends on**, prioritizing anything a current or
    upcoming assignment leans on for the deepest treatment, even if the lecture itself only mentions
@@ -75,13 +72,11 @@ key concepts and training methods is a defining part of this course. Whenever th
 a required-reading paper, that paper gets its own clearly-marked subsection, placed inline where the
 narrative first needs it (never in a trailing bibliography dump), with this fixed shape.
 
-A Paper Breakdown is never the primary structuring device — per "Writing procedure" above, the
-concept or architecture it's about is taught from the ground up *before* the breakdown, and the
-breakdown's job is only to anchor that already-taught material with this specific paper's concrete
-numbers, implementation, and results. If a week's notes end up reading as a sequence of Paper
-Breakdowns stitched together with little concept-teaching in between, that's a signal the
-concept-first procedure wasn't actually followed for that paper's underlying idea, and the section
-needs a from-scratch conceptual lead-in written first.
+A Paper Breakdown is never the primary structuring device (see "Writing procedure" above): its job
+is only to anchor already-taught material with this specific paper's concrete numbers,
+implementation, and results. If a week's notes read as Paper Breakdowns stitched together with
+little concept-teaching in between, that's a signal the concept-first procedure wasn't followed for
+that paper's underlying idea, and the section needs a from-scratch conceptual lead-in written first.
 
 The fixed shape:
 
@@ -122,20 +117,17 @@ Either way, the treatment must explicitly cover:
   against an ordinary regression head's "predict-directly" design, against a diffusion model's
   "iteratively denoise" design, against a Mixture Density Network's "predict distribution
   parameters directly" design.
-- **Build bottom-up from the assumed MLP/CNN baseline, never top-down from the named concept — and
-  treat every piece beyond that baseline as genuinely advanced, not a small step past it.** The
-  target reader knows ordinary MLPs/CNNs, backprop, and standard supervised training loops and
-  nothing more (see "Who these notes are for"). An autoencoder, a variational/conditional
-  autoencoder, a transformer/self-attention layer, a diffusion/denoising process, a
-  contrastive/InfoNCE objective — each is itself an unfamiliar, advanced idea to this reader,
-  doubly so when applied outside the text/image contexts it's normally taught in, never a
-  one-clause extension of the MLP/CNN baseline. Give each its own plain-language analogy before
-  formalism (same as any other new term under "Who these notes are for"), showing what problem it
-  solves and what concretely changes relative to what the reader already has, with an explicit
-  bridge whenever it's applied to this course's non-standard data (e.g. what plays the role a
-  word/token plays in a transformer, here). Naming the concept and then glossing what it does,
-  however accurately, is the failure mode to avoid; so is treating it as a minor incremental step
-  just because it's built out of MLP layers underneath.
+- **Build bottom-up from the assumed MLP/CNN baseline, never top-down from the named concept.** The
+  target reader knows only ordinary MLPs/CNNs, backprop, and standard supervised training loops (see
+  "Who these notes are for"). An autoencoder, a variational/conditional autoencoder, a
+  transformer/self-attention layer, a diffusion/denoising process, and a contrastive/InfoNCE
+  objective are each themselves unfamiliar, advanced ideas to this reader — not small steps past
+  that baseline — doubly so when applied outside the text/image contexts they're normally taught in.
+  Give each its own plain-language analogy before formalism (same as any other new term under "Who
+  these notes are for"), showing what problem it solves, what concretely changes relative to what
+  the reader already has, and — when applied to this course's non-standard data — an explicit
+  bridge (e.g. what plays the role a word/token plays in a transformer, here). The failure mode to
+  avoid: naming the concept and glossing what it does, however accurately, without this treatment.
 - **Use diagrams liberally, not as occasional decoration.** Favor a diagram wherever it would show
   any of the following, and default to including one rather than leaving it to prose alone:
   - The architecture concretely **applied to the actual robotics task** — real inputs (a camera
@@ -230,15 +222,13 @@ sidebar/mobile nav and the "N of 13 lecture weeks logged" progress indicator fro
 `.week-block`/`.week-card` elements exist — adding a week just means adding a new `.week-block` (and
 a matching glossary card, if one doesn't already exist as a forward-looking preview).
 
-Diagrams live only in the artifact, never in the markdown files. Any geometric or procedural idea
-worth illustrating gets an original inline SVG `<figure class="chart-fig">`, styled with the
-artifact's own CSS custom properties so it stays theme-aware — never a screenshot of the actual
-lecture slide. Figure captions are numbered "Fig. N" sequentially in document order across the whole
-page (not per week), so inserting a new figure ahead of existing ones means renumbering the ones
-after it. The `weekN-study-notes.md` files stay plain markdown text/tables only, with no embedded
-diagrams or SVG figures — diagrams live in the artifact alone — matching the pattern set by Week 1.
-Keep the nav script's coding standard: JSDoc per function, fully descriptive names, no unexplained
-hardcoded numbers.
+Diagrams live only in the artifact, never in the `weekN-study-notes.md` files, matching the pattern
+set by Week 1. Any geometric or procedural idea worth illustrating gets an original inline SVG
+`<figure class="chart-fig">`, styled with the artifact's own CSS custom properties so it stays
+theme-aware — never a screenshot of the actual lecture slide. Figure captions are numbered "Fig. N"
+sequentially in document order across the whole page (not per week), so inserting a new figure
+ahead of existing ones means renumbering the ones after it. Keep the nav script's coding standard:
+JSDoc per function, fully descriptive names, no unexplained hardcoded numbers.
 
 **Hyperlinks:** every technical term, named concept, instrument, formula, phenomenon, robotics
 component, or historical figure introduced in prose or tables — in the artifact **and** in the
@@ -251,8 +241,7 @@ course site, a paper's own project page, or other external references (Paper Bre
 are the one exception — the paper's own arXiv/venue link stays as plain, unlinked citation text,
 not a Wikipedia link). Link to the specific page/anchor that actually matches the concept as used,
 not just a plausibly-named page — this is exactly what the fact-auditor's link-resolution check
-verifies. Add links as each new week's content is written, to both the notes and the artifact, the
-same way Week 1's were.
+verifies.
 
 ## Git workflow
 

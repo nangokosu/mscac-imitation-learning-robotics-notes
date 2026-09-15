@@ -8,7 +8,7 @@ Running, beginner-level study notes for CSC2626 (Imitation Learning for Robotics
 
 | File | What it is |
 |---|---|
-| [`week1-study-notes.md`](./week1-study-notes.md) | Week 1 — imitation learning vs. supervised learning: covariate shift, DAgger, teleoperation hardware, and multi-modal generative policies, with deep breakdowns of all 12 required-reading papers. |
+| [`week1-study-notes.md`](./week1-study-notes.md) | Week 1 — imitation learning vs. supervised learning: covariate shift, DAgger, teleoperation hardware, and multi-modal generative policies, with deep breakdowns of all 22 required and optional/appendix papers. |
 | [`glossary.md`](./glossary.md) | A single, cumulative glossary of course terminology, grouped by the week each term is (or will be) covered. |
 | [`CLAUDE.md`](./CLAUDE.md) | The project's own working notes for how these are generated and kept up to date. |
 

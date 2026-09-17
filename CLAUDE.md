@@ -55,7 +55,10 @@ For each new week:
 
 1. **Identify all concepts the lecture actually depends on**, prioritizing anything a current or
    upcoming assignment leans on for the deepest treatment, even if the lecture itself only mentions
-   it in passing.
+   it in passing. This step also reads that week's entry in `weekly-attention-points.md` (see
+   "Professor's weekly attention-points checklist" below) alongside the slides and readings — every
+   bullet listed there for the week must map onto a concept in the dependency graph built next, not
+   just get name-dropped somewhere in the prose.
 2. **Identify the underlying math/algorithm each concept assumes**, without assuming familiarity —
    DAgger's regret bound, behavioral cloning's quadratic-in-horizon error argument, an energy-based
    model's energy formulation each get their own from-scratch treatment, not just a citation.
@@ -177,6 +180,25 @@ The bottom-up-baseline and liberal-diagram rules in "Explaining novel neural net
 above apply here too, on every architecture in the grouped family — grouping several papers
 together is not a reason to explain any one of them more thinly.
 
+## Professor's weekly attention-points checklist
+
+`weekly-attention-points.md` holds the professor's own per-week "Things to pay attention to" list,
+originally circulated as a Google Doc. It is a required source for every week, supplementing (never
+replacing) the lecture slides and readings under "Source material" below — the slides and readings
+supply the depth and evidence, this checklist supplies the professor's own list of what must not be
+missed. Every bullet listed for a given week is a mandatory coverage item: the corresponding
+`weekN-study-notes.md` and the artifact's matching `week-N` section must each explicitly name and
+explain it, at the level of depth the bullet implies (a narrow sub-claim like "DAgger's guarantees
+on compounding error as a linear function of the horizon" needs that specific claim stated, not
+just general DAgger coverage that a reader would have to infer it from).
+
+The source Google Doc cannot be reliably re-fetched by tooling (it requires Google sign-in, and
+automated fetching only returns a paraphrased view rather than the exact text), so
+`weekly-attention-points.md` is not auto-synced from it. If the professor updates the doc during
+the term, the user re-pastes the new text and the file is updated by hand at that point — always
+check whether a given week's entry might have been revised since the notes for that week were last
+touched.
+
 ## Source material
 
 - Course site: https://csc2626.github.io/2026F_website/ (schedule and full syllabus on `index.html`;
@@ -197,6 +219,8 @@ to the assignment.
 ## File structure
 
 - `CLAUDE.md` — this file.
+- `weekly-attention-points.md` — the professor's verbatim per-week "things to pay attention to"
+  checklist; see "Professor's weekly attention-points checklist" above.
 - `weekN-study-notes.md` — one per lecture week, following the structure established in
   `week1-study-notes.md`: numbered sections mirroring the concept-dependency order (not the
   lecture's own slide order), Paper Breakdowns inline at first use, worked examples/algorithm
@@ -269,11 +293,16 @@ Don't leave changes sitting uncommitted or unpushed for the user to handle separ
 ## When asked to add a new week
 
 1. Fetch/read that week's lecture slides and any linked readings the same way Week 1 was researched
-   (see "Source material" above).
+   (see "Source material" above), and read that week's entry in `weekly-attention-points.md` (see
+   "Professor's weekly attention-points checklist" above) alongside them. Treat every bullet listed
+   there for the week as a mandatory coverage item for both the notes and the artifact section
+   written in steps 2 and 4 below.
 2. Write `weekN-study-notes.md` following the Week 1 structure and tone, arrived at through the
    "Writing procedure" sequence above rather than by drafting prose directly off the slides.
    Wikipedia-link each technical term on first mention the same way as Week 1 (see "Hyperlinks"
-   above) — the notes carry the same links as the artifact, just as plain markdown, not HTML.
+   above) — the notes carry the same links as the artifact, just as plain markdown, not HTML. Before
+   treating the notes as done, check them against that week's `weekly-attention-points.md` entry
+   bullet by bullet and confirm each is explicitly named and explained, not just implied.
 3. Update `glossary.md`: move that week's terms into a dated `## Week N` section, keeping the
    beginner-level one-sentence-plus-cross-reference format.
 4. Update the running artifact (URL in `README.md`) by reading it first (`action: "read"`), then

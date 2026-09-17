@@ -123,7 +123,7 @@ The `max_{a'}` is what makes this update off-policy: the target depends only on 
 
 ### Paper Breakdown: Neural Fitted Q-Iteration for RoboCup soccer
 
-*Citation: Martin Riedmiller, Thomas Gabel, Roland Hafner, Sascha Lange, "Reinforcement Learning for Robot Soccer," Autonomous Robots 27(1):55–73, 2009.*
+*Citation: Martin Riedmiller, Thomas Gabel, Roland Hafner, Sascha Lange, "Reinforcement Learning for Robot Soccer," Autonomous Robots 27(1):55–74, 2009.*
 
 **Problem/motivation.** Learning robot control policies directly through trial-and-error interaction is expensive on real hardware — every failed episode costs real time and risks damage — so the paper asks whether a *batch*, off-policy value-based method can learn effective robot-soccer skills from a modest amount of stored, reusable interaction data, rather than the huge sample counts online RL typically needs.
 
@@ -245,7 +245,7 @@ A subtlety the lecture flags explicitly: if the constraint is phrased as "make `
 
 ### Paper Breakdown: BEAR (support matching via MMD)
 
-*Citation: Aviral Kumar, Justin Fu, George Tucker, Sergey Levine, "Stabilizing Off-Policy Q-Learning via Bootstrapping Error Reduction," NeurIPS 2019.*
+*Citation: Aviral Kumar, Justin Fu, Matthew Soh, George Tucker, Sergey Levine, "Stabilizing Off-Policy Q-Learning via Bootstrapping Error Reduction," NeurIPS 2019.*
 
 **Problem/motivation.** Names the failure mode of §5.1 **bootstrapping error**, and formalizes how it accumulates: with `ζ_k(s,a) = |Q_k(s,a) − Q*(s,a)|` the true error at iteration `k` and `δ_k(s,a) = |Q_k(s,a) − 𝒯Q_{k-1}(s,a)|` the fresh regression error introduced at this step, `ζ_k(s,a) ≤ δ_k(s,a) + γ · max_{a'} E_{s'}[ζ_{k-1}(s',a')]` — errors on out-of-distribution actions are never directly minimized during training, yet still propagate forward, discounted, through every future backup.
 
@@ -422,7 +422,7 @@ The methods above are validated mostly on MuJoCo/Atari benchmarks. This section 
 
 **Method & training procedure.** The low-level controller is a goal-conditioned RNN `π_θ(a|s, s_g)`, where `s_g` is a state observed `T` steps ahead in a training sub-sequence, trained by ordinary BC regression: `Σ_k ‖a_k − π_θ(s_k|s_g)‖²`. The high-level mechanism has two parts: a **conditional VAE** that learns to propose plausible future goal states `s_g` given the current state (trained on `(s_t, s_{t+T})` pairs from the data), and a **value function** `Q(s,a)` trained via a BCQ-style batch-constrained update (§5.2's mechanism, reused here rather than re-derived) to score how promising each proposed goal is. At test time: sample several candidate goals from the VAE, pick the one the value function scores highest, hand it to the low-level RNN as a fixed target for `T` steps, then repeat.
 
-**Results.** On a real-robot-derived pick-and-place task (RoboTurk-collected, crowdsourced, intentionally suboptimal demonstrations), IRIS reached 81.3% success versus BC's 13.7%, BC-RNN's 16.7%, and BCQ's 18.0% — plain imitation and plain batch-constrained Q-learning both struggled badly on this diverse data, while IRIS's factorized approach reached success rates 4–6× higher.
+**Results.** On a simulated Robosuite object-lifting task using intentionally suboptimal demonstrations collected from a single human via the RoboTurk teleoperation interface, IRIS reached 81.3% success versus BC's 13.7%, BC-RNN's 16.7%, and BCQ's 18.0% — plain imitation and plain batch-constrained Q-learning both struggled badly on this suboptimal data, while IRIS's factorized approach reached success rates 4–6× higher. (On the paper's separate, genuinely crowdsourced, real-robot-derived RoboTurk pick-and-place dataset, all methods scored far lower — IRIS reached 28.3%, versus BC's 0% and BCQ's 0% — underscoring how much harder truly crowdsourced multi-human data is than single-demonstrator suboptimal data.)
 
 **How it connects.** IRIS reuses BCQ's policy-constrained value function as a sub-component rather than treating goal-conditioned imitation and offline RL as competitors — a direct example of the two solution families (§6, and offline RL generally) composing rather than substituting for each other.
 
@@ -464,7 +464,7 @@ The methods above are validated mostly on MuJoCo/Atari benchmarks. This section 
 
 **Method & training procedure.** Trained with Conservative Q-Learning (§7.2's exact mechanism, reused rather than re-derived) over the union of both datasets. The stitching argument, in the authors' own framing: "Q-learning propagates information backwards through a trajectory... state-action pairs at the end of a trajectory with a high reward are assigned higher values, and these values propagate to states further back in time" — applied across the combined dataset, a prior-dataset trajectory ending in a state that happens to also appear in a task-demo trajectory gets its value updated based on that demo's eventual reward, even though the two trajectory segments came from entirely different collection episodes. Plain imitation learning has no analogous mechanism, since BC only fits the action distribution conditioned on states actually present in its own (small) demonstration set, with no cross-trajectory value-propagation step at all.
 
-**Results.** On a simulated grasp-from-drawer task, when the drawer started in an initial condition absent from the small task-specific demo set (closed, or blocked by another object), COG reached 68–78% success while BC, plain offline RL trained only on the task-specific set, and SAC all scored at or near 0%. On a real-robot version of the drawer task, COG succeeded in 7 of 8 trials from a closed-drawer start, while a BC baseline never succeeded at all.
+**Results.** On a simulated grasp-from-drawer task, when the drawer started in an initial condition absent from the small task-specific demo set (closed, or blocked by another object), COG reached 68–78% success. An offline-RL ablation trained only on the task-specific set (no prior data) and SAC both scored 0% on these novel conditions (SAC diverged in the authors' runs); a naive BC baseline trained on all data did better than those two but still topped out at 22–34%, well below COG. On a real-robot version of the drawer task, COG succeeded in 7 of 8 trials from a closed-drawer start, while a BC-oracle baseline (given handpicked successful trajectories) never succeeded at all.
 
 **How it connects.** COG is the cleanest empirical demonstration in this week's notes of exactly what §4.2 argued in the abstract: trajectory stitching via Bellman backups genuinely extends effective policy coverage beyond what any single demonstrated trajectory shows.
 

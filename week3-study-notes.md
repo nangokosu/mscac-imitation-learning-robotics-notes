@@ -269,7 +269,7 @@ MMD²({x_i}, {y_j}) = (1/n²)Σ_{i,i'} k(x_i,x_i') − (2/nm)Σ_{i,j} k(x_i,y_j)
 
 **Problem/motivation.** Argues that offline-RL methods (the paper's own complexity ledger names CQL, §7.2 below, and Fisher-BRC specifically) accumulate substantial extra machinery on top of an ordinary off-policy algorithm — added regularizers, generative models, extra hyperparameters, removed baseline components — creating real implementation and tuning burden.
 
-**Key idea/innovation.** Add a single behavior-cloning regularization term directly to [TD3](https://en.wikipedia.org/wiki/Twin-delayed_deep_deterministic_policy_gradient_algorithm)'s ordinary deterministic policy-gradient objective — nothing else about TD3 changes.
+**Key idea/innovation.** Add a single behavior-cloning regularization term directly to [TD3](https://en.wikipedia.org/wiki/Model-free_(reinforcement_learning))'s ordinary deterministic policy-gradient objective — nothing else about TD3 changes.
 
 **Method & training procedure.** Where vanilla TD3 maximizes `E[Q(s,π(s))]`, TD3+BC maximizes
 

@@ -97,13 +97,53 @@ definition, but the original stays as a beginner anchor.
 
 ---
 
-## Weeks 3–13 — Forward-looking preview
+## Week 3 — Offline/Batch Reinforcement Learning
+*(full explanations in [`week3-study-notes.md`](./week3-study-notes.md); this is the lookup-speed version)*
+
+**RL terminology and off-policy vocabulary:**
+- **[Markov Decision Process (MDP)](https://en.wikipedia.org/wiki/Markov_decision_process), formalized** — the full tuple `(S, A, T, r, γ, d_0)` behind every RL algorithm: state space, action space, transition function, reward function, discount, and initial-state distribution.
+- **State-visitation distribution `d^π(s)`** — the distribution over states a policy `π` actually visits if rolled out repeatedly; two different policies in general induce two different visitation distributions, the root cause of offline RL's central difficulty.
+- **Episodic vs. non-episodic (continuing)** — an episodic task has a natural end and a finite-horizon return; a non-episodic task never terminates, and needs a discount `γ < 1` to keep its infinite-horizon return finite.
+- **[Exploration vs. exploitation](https://en.wikipedia.org/wiki/Exploration-exploitation_dilemma)** — taking the currently-best-known action (exploitation) versus deliberately taking a possibly-worse action to learn more (exploration); offline RL sidesteps this axis entirely, since there's no live decision to explore with.
+- **Policy optimization vs. value-function estimation** — directly searching over policy parameters to maximize return, versus estimating a value function and deriving a policy from it (e.g. acting greedily).
+- **Behavior policy (`π_β`) vs. target policy (`π_θ`)** — whatever policy actually generated a dataset, versus the policy currently being learned/improved from it; off-policy methods allow these to differ, which is what makes offline RL possible at all.
+- **[Policy gradient](https://en.wikipedia.org/wiki/Policy_gradient_method) / REINFORCE** — a policy-optimization method using the log-derivative trick (`∇p = p∇log p`) to turn the gradient of an expectation over sampled trajectories into an expectation of a differentiable quantity, letting a policy's parameters be updated without ever differentiating through the environment.
+- **Actor-critic** — pairing a policy ("actor") with a learned value function ("critic") used to compute an advantage `A(s,a) = Q(s,a) − V(s)`, reducing the variance of a raw policy-gradient update by asking "was this action better than average for this state?" instead of scoring on the whole trajectory's noisy return.
+- **[Q-learning](https://en.wikipedia.org/wiki/Q-learning) / Bellman optimality backup** — the update `Q(s,a) ← r + γ·max_{a'} Q(s',a')`; off-policy by construction, since the target only depends on the observed transition, never on what policy chose the next action.
+- **Fitted Q-Iteration (FQI)** — Q-learning reorganized as repeated batches of supervised regression: compute Bellman-backup targets with the current Q-estimate, then fit a new Q-function to them; the structural ancestor of every offline-RL algorithm this week covers.
+- **[Cross-Entropy Method (CEM)](https://en.wikipedia.org/wiki/Cross-entropy_method) for continuous-action argmax** — reusing Week 2's CEM planner (§6 there) not to plan a trajectory but to search for the action maximizing a learned Q-network, exactly as QT-Opt does, since there's no way to enumerate "every possible action" when the action space is continuous.
+
+**The offline-RL problem and its two solution families:**
+- **Offline (batch) reinforcement learning** — learning a policy from one fixed, pre-collected dataset of (state, action, reward, next-state) transitions, with zero further environment interaction during training.
+- **Trajectory stitching** — offline RL's potential advantage over behavioral cloning: Bellman backups can propagate value across separately-collected, individually-suboptimal trajectories, yielding a policy better than any single trajectory in the dataset, something plain imitation has no mechanism for.
+- **Extrapolation error** — Scott Fujimoto et al.'s name for out-of-distribution state-action pairs being erroneously assigned unrealistic Q-values, with no online correction step to fix the mistake; the core failure mode motivating this entire week's solution methods.
+- **Policy constraints** — one solution family: restrict the learned policy to propose only actions similar to the behavior policy's, so the Bellman backup's `max` is never evaluated on a genuinely unfamiliar action (BCQ, BEAR, TD3+BC).
+- **Value conservatism** — the other solution family: make the learned Q-function itself pessimistic on unfamiliar actions, so a downstream policy naturally avoids them without any explicit constraint on the policy (CQL, REM).
+- **Mass-covering vs. mode-seeking KL constraints** — the asymmetry of [KL divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence): constraining `KL(π_β‖π_θ)` forces `π_θ` to cover every mode of a multimodal `π_β` (even the low-density region between modes); constraining `KL(π_θ‖π_β)` only forbids `π_θ` from inventing unsupported actions, letting it safely collapse onto a single mode.
+- **Maximum Mean Discrepancy (MMD) for support-matching** — reusing the sample-only distribution-comparison tool from Week 1's glossary, here used by BEAR to constrain only the *support* of the learned policy to the behavior policy's support, rather than matching their full distributional shape.
+
+**Papers and their headline mechanism:**
+- **QT-Opt** — a deep Q-network scoring `(image, action)` pairs with a single scalar in `[0,1]`, trained on real-robot grasping data from 7 parallel arms, with continuous-action selection done by CEM search rather than a second actor network.
+- **BCQ (Batch-Constrained deep Q-learning)** — restricts candidate actions to ones a VAE judges plausible under the batch's own action distribution, then perturbs and re-ranks them by Q-value.
+- **BEAR (Bootstrapping Error Accumulation Reduction)** — constrains only the learned policy's support (via MMD), rather than its full distribution, to the behavior policy's support.
+- **TD3+BC** — adds one behavior-cloning regression term directly to TD3's policy-gradient objective; matches far more complex methods' performance with a fraction of the implementation/tuning overhead.
+- **Conservative Q-Learning (CQL)** — adds a log-sum-exp penalty pushing down Q-values on a soft-max-weighted proxy over the whole action space, while pushing up Q-values on the dataset's actual actions, provably lower-bounding the true Q-function for a large-enough penalty weight.
+- **REM (Random Ensemble Mixture)** — trains an ensemble of Q-heads by enforcing the Bellman equation across randomly-weighted convex combinations of the ensemble at every step, an ensembling/regularization mechanism distinct from CQL's explicit penalty.
+- **D4RL** — a standardized offline-RL benchmark suite whose task categories are each deliberately engineered to stress one realistic property (narrow data, mixed-quality data, sparse-reward trajectory stitching, human demonstrations, partial observability).
+- **"Why Should I Trust You, Bellman?"** — shows low Bellman error does not imply low value error, via both a cancellation argument and a finite-data non-uniqueness argument; a direct caution against trusting training losses in every method above.
+- **Instabilities of offline RL with pre-trained representations** — shows even a near-oracle, task-trained feature representation isn't enough to stabilize offline value estimation without a much stronger "policy completeness" and low-distribution-shift condition.
+- **IRIS / robomimic / reward sketching / COG** — four different ways of scaling offline learning to real robot manipulation: goal-conditioned factorized control (IRIS), a controlled empirical study of what design choices matter (robomimic), human-sketched retroactive video rewards (reward sketching), and stitching a small task-specific demo set to a large task-agnostic prior dataset (COG).
+- **IQ-Learn (Inverse Soft-Q Learning)** — collapses adversarial imitation learning's nested reward-and-policy min-max into a single concave maximization over one Q-function, whose offline simplification is mathematically identical to CQL's objective with zero reward.
+- **Cal-QL** — a one-line fix to CQL's objective that keeps its Q-values calibrated against a reliable reference policy's true value, preventing the performance collapse that plain CQL pretraining otherwise causes once online fine-tuning begins.
+
+---
+
+## Weeks 4–13 — Forward-looking preview
 
 *(seeded from the course schedule at https://csc2626.github.io/2026F_website/#schedule; terms get
 promoted into their own dated `## Week N` section, with full beginner definitions, once that
 week's notes are actually written)*
 
-- **Week 3 — Offline/batch reinforcement learning**: Conservative Q-Learning (CQL), IQ-Learn, [D4RL](https://en.wikipedia.org/wiki/Reinforcement_learning) benchmark suite.
 - **Week 4 — Imitation learning combined with RL & planning**: guided policy search, planning with diffusion, expert iteration, [dynamic movement primitives](https://en.wikipedia.org/wiki/Dynamic_movement_primitives).
 - **Week 5 — Imitation as program induction**: neural programmer-interpreters, Neural Task Programming, TACO, hierarchical task learning.
 - **Week 6 — Inverse reinforcement learning**: maximum entropy [inverse reinforcement learning](https://en.wikipedia.org/wiki/Inverse_reinforcement_learning), guided cost learning, Bayesian IRL, preference learning, value alignment.

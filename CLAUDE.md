@@ -1,72 +1,67 @@
-# CSC2626 Imitation Learning for Robotics — Study Notes Project
+# Waabi Interview Prep: E2E Learning & Modern Architectures
 
 ## Purpose
 
-This project produces running study notes for CSC2626 (Imitation Learning for Robotics, Fall
-2026, University of Toronto): one markdown file per lecture week plus a cumulative glossary, to
-help the user learn the field from scratch over the term — not to solve assignments or the course
-project.
+This project distills the core concepts from CSC2626 (Imitation Learning for Robotics) that are
+directly relevant to **Waabi's focus on end-to-end learning and cutting-edge neural architectures**.
+It covers only the weeks and papers that matter for autonomous systems engineering at Waabi: from
+behavioral cloning fundamentals, to offline learning for safe deployment, to the latest diffusion
+models and vision-based imitation learning approaches that scale via internet video.
+
+**Goal:** develop interview-ready depth on E2E learning, policy learning from demonstrations, and
+modern architectures — what Waabi actually hires for.
 
 ## Who these notes are for
 
-The user is a complete beginner to imitation learning, robotics, and reinforcement
-learning/control — including ordinary robotics vocabulary itself, not just the theory layered on
-top of it. The one exception: the user already knows general neural network architecture
-(backpropagation, MLPs/CNNs, loss functions, standard training loops) — that part is assumed, not
-re-derived.
+You're a complete beginner to imitation learning, robotics, and reinforcement learning/control —
+including ordinary robotics vocabulary, not just theory. You already know: backpropagation,
+MLPs/CNNs, loss functions, standard supervised training loops. That's assumed; we don't re-derive it.
 
-- **Do not** re-explain basic deep-learning machinery (what an MLP/CNN is, backprop, cross-entropy,
-  ordinary supervised training loops) — assume it.
-- **Do** define everything else from scratch on first use, with a plain-language analogy before the
-  formal definition — including robotics/hardware vocabulary that might sound ordinary but can't be
-  assumed: end-effector, gripper, manipulator/robot arm, degrees of freedom (DOF), joint space vs.
-  task space, workspace, kinematics, proprioception, RGB-D camera, force/torque sensing, embodiment,
-  bimanual manipulation, leader-follower arm, teleoperation, kinesthetic demonstration. Treat none
-  of these as "obviously known" just because they sound like everyday words.
-- Also define every RL/control/IL-theory term from scratch: MDP, policy, state/observation/action
-  space, reward/cost, on-policy vs. off-policy, regret/no-regret learning, covariate shift, horizon,
-  rollout, receding-horizon control, energy-based model, action chunking, epistemic vs. aleatoric
-  uncertainty, etc.
-- Put definitions inline where a term first appears, not only in the glossary — a reader should
-  never have to jump elsewhere to follow the current sentence. The glossary is a lookup-speed index;
-  its entry can be a shorter echo of the inline definition.
-- For formulas, show the derivation intuition — why the formula has that shape — not just the
-  result.
-- Cross-reference where a concept reappears or gets formalized in a later week.
-- Disambiguate overloaded terms explicitly every time they recur (e.g. "policy" as a function vs.
-  a distribution; "loss" in the imitation sense vs. the RL-reward sense) — state in-line which is
-  meant.
-- **No dense blocks of text** — a long unbroken paragraph signals a concept needs restructuring, not
-  just tighter prose. Split multi-idea paragraphs at idea boundaries, pull worked examples and
-  algorithm walkthroughs into their own callout-style blocks, and use lists for enumerations (e.g.
-  DAgger's algorithm steps, the five parts of a Paper Breakdown).
-- Illustrate geometric/procedural ideas (the DAgger interaction loop, embodiment transfer across
-  robots, an energy landscape, error-growth curves, etc.) with a diagram proactively, whenever prose
-  alone would be hard to picture — see "Published artifact" below for how these are built.
+**What we define from scratch:**
+- Robotics/hardware vocabulary: end-effector, gripper, manipulator/robot arm, degrees of freedom
+  (DOF), joint space vs. task space, workspace, kinematics, proprioception, RGB-D camera, force/torque
+  sensing, embodiment, teleoperation, kinesthetic demonstration.
+- RL/control/IL theory: MDP, policy, state/observation/action space, reward/cost, on-policy vs.
+  off-policy, covariate shift, horizon, rollout, trajectory, distribution shift, offline learning.
+- Modern architectures you'll see at Waabi: diffusion models applied to action generation, energy-based
+  policies, contrastive representation learning, vision transformers for robotics, video foundation
+  models applied to imitation learning.
+
+**How we teach it:**
+- Plain-language analogy first, formal definition second. Never assume terms are "obviously known."
+- Inline definitions where terms first appear; glossary is a lookup index, not the primary source.
+- For formulas: show derivation intuition, not just the result. Why does the formula have that shape?
+- Disambiguate overloaded terms (e.g., "policy" as function vs. distribution) each time they recur.
+- No dense blocks of text — long paragraphs signal a concept needs restructuring. Split at idea
+  boundaries, pull algorithm walkthroughs into their own blocks.
+- Diagrams for every concept that's hard to visualize in prose alone: the DAgger loop, how diffusion
+  models generate actions, how visual features flow through a policy network, how offline RL constraints
+  work, comparisons between E2E and modular pipelines. Diagrams show the actual robotics task
+  (camera → network → action) and the architecture explicitly, never just abstract boxes.
 
 ## Writing procedure — concepts and architectures first, papers as evidence
 
 These notes teach concepts and neural-network architectures ground-up from first principles as the
-primary content of every week — no paper, required or optional/appendix, ever organizes the notes.
-Instead, a paper's role is to *anchor* an already-taught concept or architecture: it supplies the
-concrete implementation, numbers, and results that make the abstract idea concrete. Notes are never
-drafted directly off the slides, or assembled as a sequence of paper summaries stitched end to end.
-For each new week:
+primary content — papers anchor already-taught concepts with concrete implementation and empirical
+results, never organize the notes themselves. Notes are never drafted directly off the slides or
+assembled as paper summaries stitched end-to-end.
 
-1. **Identify all concepts the lecture actually depends on**, prioritizing anything a current or
-   upcoming assignment leans on for the deepest treatment, even if the lecture itself only mentions
-   it in passing. This step also reads that week's entry in `weekly-attention-points.md` (see
-   "Professor's weekly attention-points checklist" below) alongside the slides and readings — every
-   bullet listed there for the week must map onto a concept in the dependency graph built next, not
-   just get name-dropped somewhere in the prose.
-2. **Identify the underlying math/algorithm each concept assumes**, without assuming familiarity —
-   DAgger's regret bound, behavioral cloning's quadratic-in-horizon error argument, an energy-based
-   model's energy formulation each get their own from-scratch treatment, not just a citation.
-3. **Map the ground-up relationships between concepts** — prerequisite, formalizes, builds-on —
-   before writing a single sentence of exposition. This dependency graph, not the lecture's own
-   slide order, determines section order and where each Paper Breakdown gets inserted.
-4. **Only then write the narrative flow**, still bottom-up: each concept introduced only after what
-   it depends on, with the connective tissue between concepts made explicit.
+**For the five Waabi-relevant weeks (1, 3, 4, 10, 11):**
+
+1. **Identify all concepts the notes depend on**, prioritizing what's most relevant to autonomous
+   systems: behavioral cloning and why it fails at scale (compounding error), offline RL and how it
+   enables safe deployment, diffusion models applied to action generation, visual imitation learning
+   at scale (video-based learning), and modern representation learning for robustness.
+2. **Identify the underlying math/algorithm each concept assumes** — without assuming familiarity.
+   Behavioral cloning's quadratic-in-horizon error, DAgger's regret bound, diffusion model
+   reverse-process intuition, contrastive loss formulations — each gets full from-scratch treatment.
+3. **Map the ground-up dependency graph** — what's prerequisite, what formalizes what, what
+   builds on what — before writing a sentence. This graph, not the lecture's slide order, determines
+   exposition order and where Paper Breakdowns get placed.
+4. **Write bottom-up narrative flow**: each concept introduced only after its dependencies, with
+   explicit connective tissue showing how they relate. Make clear how Week 1 foundational ideas
+   (behavioral cloning, DAgger) feed into Week 3 offline learning, which feed into Week 4 diffusion
+   models, which connect to Week 10's visual approaches and Week 11's representation learning.
 
 ## Paper Breakdowns
 
@@ -180,96 +175,85 @@ The bottom-up-baseline and liberal-diagram rules in "Explaining novel neural net
 above apply here too, on every architecture in the grouped family — grouping several papers
 together is not a reason to explain any one of them more thinly.
 
-## Professor's weekly attention-points checklist
+## Source material & coverage scope
 
-`weekly-attention-points.md` holds the professor's own per-week "Things to pay attention to" list,
-originally circulated as a Google Doc. It is a required source for every week, supplementing (never
-replacing) the lecture slides and readings under "Source material" below — the slides and readings
-supply the depth and evidence, this checklist supplies the professor's own list of what must not be
-missed. Every bullet listed for a given week is a mandatory coverage item: the corresponding
-`weekN-study-notes.md` and the artifact's matching `week-N` section must each explicitly name and
-explain it, at the level of depth the bullet implies (a narrow sub-claim like "DAgger's guarantees
-on compounding error as a linear function of the horizon" needs that specific claim stated, not
-just general DAgger coverage that a reader would have to infer it from).
+**Weeks covered:** 1 (Imitation Learning Fundamentals), 3 (Offline & Batch RL), 4 (Diffusion Planning
+& Hybrid IL+RL), 10 (Visual Demonstrations), 11 (Representation Learning & Generalization).
 
-The source Google Doc cannot be reliably re-fetched by tooling (it requires Google sign-in, and
-automated fetching only returns a paraphrased view rather than the exact text), so
-`weekly-attention-points.md` is not auto-synced from it. If the professor updates the doc during
-the term, the user re-pastes the new text and the file is updated by hand at that point — always
-check whether a given week's entry might have been revised since the notes for that week were last
-touched.
+- Course site: https://csc2626.github.io/2026F_website/ — fetch required and optional readings for
+  each of these five weeks from the syllabus. Required readings get full Paper Breakdown treatment;
+  optional readings are covered only if they directly advance the core concepts (no peripheral papers).
+- Fetch papers directly (arXiv, venue PDFs, project pages) — don't rely on the lecture's summary.
+  Paper Breakdown claims must trace to the paper itself.
+- Prioritize papers that are most actionable for Waabi: ones teaching E2E learning, scaling via
+  data, modern architectures, or practical deployment. Skip classical control, hierarchical task
+  decomposition, reward learning, and shared autonomy material.
 
-## Source material
+## What goes in, what doesn't
 
-- Course site: https://csc2626.github.io/2026F_website/ (schedule and full syllabus on `index.html`;
-  lecture slides under `/lecs/wNN/lecNN.html`; required/optional readings linked per-topic under
-  `index.html#week-N`). Fetch and cover *both* lists in full — see "Paper Breakdowns" above.
-- Fetch papers directly (arXiv abstract/PDF, ACM/project pages) rather than relying on the lecture's
-  own summary of them — a Paper Breakdown's claims must trace to the paper itself.
-- Skip course-logistics slides (schedule, grading, staff, policies) — notes start from the first
-  technical content slide of each lecture.
+**In these notes:**
+- Core concepts: behavioral cloning, DAgger, offline RL, diffusion models for action generation,
+  visual IL, representation learning, contrastive methods, distribution shift.
+- Paper Breakdowns showing how each paper's innovation concretely solves a real robotics problem.
+- Algorithm walkthroughs and worked examples for anything a Waabi interviewer might ask you to
+  explain on a whiteboard (DAgger's loop, diffusion model reverse process, contrastive loss).
+- Diagrams illustrating architectures applied to real robotics tasks.
 
-## What never goes in these notes
-
-Never provide a working solution to a graded assignment or the course project (e.g. runnable
-DAgger/behavioral-cloning implementation code for this course's actual assignment environments) —
-explain the underlying algorithm and math fully, but leave the specific implementation/deliverable
-to the assignment.
+**Not in these notes:**
+- Course logistics, assignments, grading.
+- Classical optimal control theory (LQR, MPC) beyond the basic idea that they exist.
+- Hierarchical task decomposition or program induction.
+- Reward learning (inverse RL, IRL), preference learning, human-in-the-loop methods.
+- Assistive robotics or shared autonomy (not Waabi's focus).
 
 ## File structure
 
-- `CLAUDE.md` — this file.
-- `weekly-attention-points.md` — the professor's verbatim per-week "things to pay attention to"
-  checklist; see "Professor's weekly attention-points checklist" above.
-- `weekN-study-notes.md` — one per lecture week, following the structure established in
-  `week1-study-notes.md`: numbered sections mirroring the concept-dependency order (not the
-  lecture's own slide order), Paper Breakdowns inline at first use, worked examples/algorithm
-  walkthroughs in their own callout-style blocks, inline Wikipedia hyperlinks on first mention of
-  each technical term (same convention and scope as the artifact's "Hyperlinks" rule below — notes
-  just stay plain markdown text/tables, with no embedded diagrams/SVG figures), and a "Part A" that
-  ends with a pointer to the shared glossary rather than repeating it.
-- `glossary.md` — the single, cumulative, beginner-facing glossary, grouped by the course week each
-  term is actually covered (not flat A–Z). Update it every time a new week's notes are written:
-  promote that week's terms out of any "forward-looking preview," and add genuinely new
-  forward-looking terms for weeks further out if the new lecture introduces them. Never delete an
-  existing entry — later weeks may deepen a definition, but the original beginner-level anchor
-  stays.
+- `CLAUDE.md` — this file (project guidelines for Waabi interview prep).
+- `week1-study-notes.md` — Imitation Learning Fundamentals (behavioral cloning, DAgger, compounding
+  error, loss functions, multi-modal generative models).
+- `week3-study-notes.md` — Offline & Batch RL (offline constraints, CQL, IQ-Learn, safe deployment,
+  data-driven learning without online interaction).
+- `week4-study-notes.md` — Hybrid IL+RL & Diffusion Planning (guided policy search, diffusion models
+  for action generation, tree search integration, planning as generation).
+- `week10-study-notes.md` — Visual Imitation Learning (keypoint tracking, video-based learning,
+  internet video scaling, causal confusion, action inference from video).
+- `week11-study-notes.md` — Representation Learning & Generalization (contrastive learning, self-
+  supervised pretraining, generalization guarantees, representation as core to robustness).
+- `glossary.md` — Waabi-focused glossary, grouped by topic (not alphabetically) covering: IL concepts,
+  offline RL concepts, visual learning concepts, representation learning concepts, architecture terms.
+  Entries are beginner-level anchors: one sentence plus cross-references. Never delete an entry;
+  deepen it as later weeks cover related ideas.
 
-## Published artifact — one running notebook, not one per week
+## Published artifact — single interactive study guide
 
-A single Claude Artifact covers the whole course, updated in place every time a new week is added
-(never create a second artifact for a new week). It follows the same mechanics as the sibling
-`computational-imaging-notes` project's artifact, with its own fresh visual identity (this is a
-different course/subject, not a reskin):
+A single Claude Artifact is the published study guide, covering all five Waabi-relevant weeks. It's
+updated in place as weeks are added (never create a second artifact for a new week).
 
-It's one HTML page with a `<section class="week-block" id="week-N" data-week-number="N"
-data-week-title="...">` per lecture week, each containing that week's own numbered subsections
-(including its Paper Breakdowns) and ending in its own `.selfcheck` block, followed by a persistent
-`<section id="glossary">` holding one `.week-card` per syllabus week. A script builds the
-sidebar/mobile nav and the "N of 13 lecture weeks logged" progress indicator from whatever
-`.week-block`/`.week-card` elements exist — adding a week just means adding a new `.week-block` (and
-a matching glossary card, if one doesn't already exist as a forward-looking preview).
+**Structure:** one HTML page with a `<section class="week-block" id="week-N" data-week-number="N"
+data-week-title="...">` per covered week (only weeks 1, 3, 4, 10, 11). Each week-block contains:
+- Numbered subsections mirroring the concept-dependency order (not the lecture's slide order).
+- Paper Breakdowns inline where first needed.
+- Worked examples and algorithm walkthroughs in their own callout blocks.
+- One `.selfcheck` block at the end (what should I be able to explain in a Waabi interview after
+  this section?).
 
-Diagrams live only in the artifact, never in the `weekN-study-notes.md` files, matching the pattern
-set by Week 1. Any geometric or procedural idea worth illustrating gets an original inline SVG
-`<figure class="chart-fig">`, styled with the artifact's own CSS custom properties so it stays
-theme-aware — never a screenshot of the actual lecture slide. Figure captions are numbered "Fig. N"
-sequentially in document order across the whole page (not per week), so inserting a new figure
-ahead of existing ones means renumbering the ones after it. Keep the nav script's coding standard:
-JSDoc per function, fully descriptive names, no unexplained hardcoded numbers.
+A persistent `<section id="glossary">` follows, with one `.week-card` per covered week. A nav script
+builds the sidebar/mobile nav and displays "5 of 5 Waabi-focus weeks" or similar progress indicator.
 
-**Hyperlinks:** every technical term, named concept, instrument, formula, phenomenon, robotics
-component, or historical figure introduced in prose or tables — in the artifact **and** in the
-`weekN-study-notes.md` files alike — gets linked on first mention within its section: an inline
-`<a href="https://en.wikipedia.org/wiki/...">` in the artifact's HTML, a markdown
-`[Term](https://en.wikipedia.org/wiki/...)` in the notes' plain-text prose (the notes' own
-plain-text/tables-only/no-diagrams rule above is unaffected — hyperlinks are just inline markdown
-links, not embedded HTML or figures). Wikipedia is the only link target ever used — never the
-course site, a paper's own project page, or other external references (Paper Breakdown citations
-are the one exception — the paper's own arXiv/venue link stays as plain, unlinked citation text,
-not a Wikipedia link). Link to the specific page/anchor that actually matches the concept as used,
-not just a plausibly-named page — this is exactly what the fact-auditor's link-resolution check
-verifies.
+**Diagrams:** live only in the artifact, never in markdown `.md` files. Include a diagram for any
+concept that's hard to visualize in prose alone:
+- Showing the actual robotics task (camera → network → robot action), never just abstract boxes.
+- Comparing architectures side-by-side: what structurally changed from one to the next?
+- Illustrating the DAgger loop, diffusion model sampling, visual feature flow, offline RL constraints.
+- Figure captions numbered "Fig. N" sequentially across the whole page. Use original inline SVG with
+  CSS custom properties for theme-awareness.
+
+**Hyperlinks:** every technical term, formula, robotics component, or concept introduced in prose
+or tables gets linked on first mention in each section:
+- Artifact: inline `<a href="https://en.wikipedia.org/wiki/...">`.
+- Markdown notes: `[Term](https://en.wikipedia.org/wiki/...)`.
+- Wikipedia only — never course site, paper project pages, or external refs (Paper citations stay
+  as plain unlinked text, showing arXiv/venue link).
 
 ## Git workflow
 
@@ -290,28 +274,37 @@ discrete step at a time, never batched into a single end-of-session commit:
 
 Don't leave changes sitting uncommitted or unpushed for the user to handle separately.
 
-## When asked to add a new week
+## Interview preparation roadmap
 
-1. Fetch/read that week's lecture slides and any linked readings the same way Week 1 was researched
-   (see "Source material" above), and read that week's entry in `weekly-attention-points.md` (see
-   "Professor's weekly attention-points checklist" above) alongside them. Treat every bullet listed
-   there for the week as a mandatory coverage item for both the notes and the artifact section
-   written in steps 2 and 4 below.
-2. Write `weekN-study-notes.md` following the Week 1 structure and tone, arrived at through the
-   "Writing procedure" sequence above rather than by drafting prose directly off the slides.
-   Wikipedia-link each technical term on first mention the same way as Week 1 (see "Hyperlinks"
-   above) — the notes carry the same links as the artifact, just as plain markdown, not HTML. Before
-   treating the notes as done, check them against that week's `weekly-attention-points.md` entry
-   bullet by bullet and confirm each is explicitly named and explained, not just implied.
-3. Update `glossary.md`: move that week's terms into a dated `## Week N` section, keeping the
-   beginner-level one-sentence-plus-cross-reference format.
-4. Update the running artifact (URL in `README.md`) by reading it first (`action: "read"`), then
-   republishing with `url` set to that same address: append a new `.week-block` after the previous
-   one (before the `<hr class="div"/>` that precedes `#glossary`), and refresh the matching
-   `#glossary` `.week-card` so it reflects what was actually covered rather than a forward-looking
-   guess. Reuse the established visual language exactly — don't redesign per week. Wikipedia-link
-   every newly introduced term the same way as Week 1 (see "Hyperlinks" above). Keep the nav
-   script's coding standard (JSDoc per function, fully descriptive names, no unexplained hardcoded
-   numbers). Load the `artifact-design` skill before touching the HTML.
-5. Commit and push after each of steps 2–4 individually, per "Git workflow" above — notes, then
-   glossary, then artifact, each its own staged-by-name commit pushed before the next step starts.
+These five weeks are ordered for interview-readiness progression:
+
+1. **Week 1 → Week 3 → Week 4:** Build deep understanding of the full IL+RL pipeline
+   - Week 1 teaches why behavioral cloning fails and introduces DAgger.
+   - Week 3 shows how to safely learn offline (Waabi's core: data-driven, no live interaction).
+   - Week 4 shows modern planning: diffusion models applied to control.
+   - Interview expectation: explain the progression from imitation to offline RL to generative planning.
+
+2. **Week 10 + Week 11:** Modern visual architecture and scaling
+   - Week 10: how visual IL scales via internet video (actionable at scale).
+   - Week 11: why representation learning matters (generalization and robustness for deployment).
+   - Interview expectation: articulate why visual features + representation learning = robust E2E systems.
+
+**Common interview questions these weeks prepare you for:**
+- "Explain behavioral cloning and its failure modes" (Week 1).
+- "Why does DAgger work? What's the regret bound?" (Week 1).
+- "How is offline RL different from online RL? Why can't you just use any RL algorithm on fixed data?" (Week 3).
+- "What makes a good offline RL algorithm?" (Week 3).
+- "How do diffusion models generate actions? Why use them over direct regression?" (Week 4).
+- "How can you learn robot policies from internet videos?" (Week 10).
+- "Why is representation learning important? What goes wrong without it?" (Week 11).
+
+## Continuous improvement: refinement workflow
+
+When existing week notes need refinement (to add clarity, fix errors, or deepen coverage):
+
+1. Read the current `.md` file and the artifact's matching `.week-block` (via `action: "read"` on the artifact URL).
+2. Identify the gap: missing depth, unclear explanation, missing diagram, inaccurate formulation?
+3. Revise the `.md` file to fix the issue, following the writing procedure above (concept-first, then evidence).
+4. If a diagram is needed, add it to the artifact only (not the markdown).
+5. Update the artifact (read first, republish to the same URL).
+6. Commit and push the markdown edit, then the artifact edit separately.

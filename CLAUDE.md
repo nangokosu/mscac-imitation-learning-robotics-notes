@@ -248,6 +248,15 @@ concept that's hard to visualize in prose alone:
 - Figure captions numbered "Fig. N" sequentially across the whole page. Use original inline SVG with
   CSS custom properties for theme-awareness.
 
+**Math rendering in the artifact:** Use native HTML and Unicode only — **never external math libraries** (KaTeX, MathJax) or CDN dependencies. Artifact viewers may block external scripts entirely. Instead:
+- **Superscripts/subscripts:** Use HTML `<sup>` and `<sub>` tags: `T<sup>2</sup>`, `a<sub>t</sub>`.
+- **Greek letters and symbols:** Use Unicode directly: π, α, β, ε, σ, μ, ∝, ≤, ≥, ∈, →, etc. All are already in the content; just strip LaTeX delimiters.
+- **Display formulas:** Wrap in `<pre>` tags with monospace font and padding for readability.
+- **Inline formulas:** Wrap in `<code>` tags for monospace rendering inline with text.
+- **Complex expressions:** Use `<sup>`/`<sub>`, Unicode symbols, and spaces/ASCII to approximate: `ℝ^D`, `∇_θ`, `μ<sub>z</sub>`, etc.
+
+This ensures the artifact is **completely self-contained** with zero external dependencies—no CDN blocking issues, no script execution failures, pure native browser HTML.
+
 **Hyperlinks:** every technical term, formula, robotics component, or concept introduced in prose
 or tables gets linked on first mention in each section:
 - Artifact: inline `<a href="https://en.wikipedia.org/wiki/...">`.

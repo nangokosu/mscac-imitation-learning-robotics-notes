@@ -138,6 +138,29 @@ definition, but the original stays as a beginner anchor.
 
 ---
 
+## Weeks 4 & 11 — World models and JEPA
+
+**World-model vocabulary (Week 4)** — deepens Week 2's *Dynamics model / world model* entry:
+- **World model (as used for driving)** — a learned [dynamics model](https://en.wikipedia.org/wiki/System_dynamics) `p(s_{t+1} | s_t, a_t)` used in three ways: to plan ([MPC](https://en.wikipedia.org/wiki/Model_predictive_control)), to train a policy on imagined rollouts, or to simulate/forecast sensor data; its training label (the next logged frame) comes free with every driving log.
+- **RSSM (Recurrent State-Space Model)** — PlaNet's latent world model: a [GRU](https://en.wikipedia.org/wiki/Gated_recurrent_unit) memory `h_t` plus a stochastic Gaussian state `s_t`, trained with an [ELBO](https://en.wikipedia.org/wiki/Evidence_lower_bound) (reconstruction + reward − [KL](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence)); see PlaNet, Dreamer.
+- **Prior vs. posterior state** — in an RSSM, the state guessed from memory before seeing the frame (prior, used to imagine) vs. inferred after encoding it (posterior, used while observing); the KL term pulls the prior toward the posterior.
+- **Imagination training** — Dreamer's method of training an actor and critic purely on latent rollouts from the world model, with λ-returns and gradients backpropagated through the learned dynamics.
+- **Model-based imitation learning (MILE)** — Wayve's RSSM in [bird's-eye view](https://en.wikipedia.org/wiki/Bird%27s-eye_view) whose action head is behavioral cloning; trained on offline expert driving logs with no reward.
+- **VQ tokenizer** — an [autoencoder](https://en.wikipedia.org/wiki/Autoencoder) whose bottleneck snaps to the nearest entry of a learned codebook ([vector quantization](https://en.wikipedia.org/wiki/Vector_quantization)), turning camera frames or [LiDAR](https://en.wikipedia.org/wiki/Lidar) sweeps into grids of discrete tokens (GAIA-1, Copilot4D).
+- **Discrete diffusion** — diffusion over tokens: the forward process masks or randomly replaces tokens, and sampling starts fully masked and commits the most confident predictions step by step (Copilot4D).
+- **Copilot4D** — Waabi's unsupervised LiDAR world model (ICLR 2024): BEV tokenizer + discrete-diffusion spatio-temporal transformer conditioned on future ego poses.
+- **Model exploitation** — a planner or imagined policy finding actions where the learned model is wrong in its favor; the world-model analogue of covariate shift (Week 1) and OOD Q-overestimation (Week 3).
+
+**JEPA vocabulary (Week 11):**
+- **JEPA (Joint-Embedding Predictive Architecture)** — [self-supervised learning](https://en.wikipedia.org/wiki/Self-supervised_learning) that predicts the *embedding* of a hidden part of the input from a visible part, so the loss lives in embedding space rather than pixel space (I-JEPA, V-JEPA).
+- **Vision transformer (ViT) patch / tubelet** — a [ViT](https://en.wikipedia.org/wiki/Vision_transformer) splits an image into 16×16-pixel patches, each becoming one token (the role a word plays in a language transformer); video JEPAs use 16×16×2 tubelets spanning two frames.
+- **Mask token** — a shared learnable vector plus a positional embedding that stands in for a hidden patch, telling the predictor where to predict.
+- **Target encoder (EMA)** — a copy of the context encoder updated only by [exponential moving average](https://en.wikipedia.org/wiki/Exponential_smoothing), `θ̄ ← m·θ̄ + (1−m)·θ`, never by gradients; it produces JEPA's training targets.
+- **Representation collapse** — the trivial solution where an encoder outputs a constant for every input; contrastive methods prevent it with negatives, JEPAs with asymmetry (stop-gradient + EMA target + predictor).
+- **V-JEPA 2-AC** — an action-conditioned predictor trained on a frozen V-JEPA 2 encoder from ~62 hours of robot video; it plans by [CEM](https://en.wikipedia.org/wiki/Cross-entropy_method)-minimizing the L1 distance between the predicted and goal-image embeddings.
+
+---
+
 ## Weeks 4–13 — Forward-looking preview
 
 *(seeded from the course schedule at https://csc2626.github.io/2026F_website/#schedule; terms get

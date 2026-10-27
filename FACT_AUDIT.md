@@ -4,6 +4,125 @@ This file holds one section per audited week. Each run replaces only the section
 
 ---
 
+## Week 10: Learning from Visual Demonstrations
+
+**Last audited:** 2026-10-27 (Week 10)
+**Scope of this run:** the `id="week-10"` `.week-block` of the published artifact (https://claude.ai/artifact/5Eh9TePpNpmwVvLmAbWPoG) plus its `#glossary` card "§D Visual Imitation Learning (Week 10)". `week10-study-notes.md` does not exist in the repo, so there was no markdown to audit and no drift to check. It was not created. `glossary.md` has no `## Week 10` section, only a one-line forward-looking preview naming K-VIL, Track2Act, VideoDex and causal confusion, so nothing there was edited. The "Thread check" callout was spot-checked only.
+
+**Summary: 29 claims audited: 9 confirmed, 17 corrected or removed, 3 unverifiable (left as-is).**
+
+**Artifact republished:** version 25 (version id `1793111835-3455`), same URL. Only the `week-10` block and the §D glossary card changed. Figure numbers (Fig. 15, Fig. 16), class names, ids and `data-*` attributes are unchanged. The publish-time document wrapper was stripped before republishing.
+
+### Corrected claims
+
+#### 1. §10.2 Track2Act Stage 1: what is learned and how
+- **Before:** "Train a visual tracking network on unlabeled internet video to predict 2D point trajectories—how pixels move frame-to-frame. Standard contrastive or supervised tracking loss." The Insight paragraph also called tracking "self-supervised."
+- **After:** Track2Act trains a track-*prediction* model. Given an initial image, a goal image and initial points, a DiT-style diffusion transformer denoises future 2D tracks, conditioned on ResNet-18 image embeddings. Its labels are CoTracker tracks computed on about 400,000 clips from Something-Something-v2, Epic-Kitchens, RT-1 and BridgeData. The goal image is each clip's last frame. No action labels are used.
+- **Source:** [arXiv:2405.01527 (HTML v2)](https://arxiv.org/html/2405.01527v2): "We instantiate track prediction as a denoising process through a DiT based diffusion model"; "In total we obtain around 400,000 videos clips."
+
+#### 2. §10.2 Stage 2 geometry (pseudocode, Fig. 15 labels and caption)
+- **Before:** "per-frame camera intrinsics (K) + known camera pose … fit rigid transform to 3D points (ICP, SVD-based alignment)". Fig. 15 read "(Deterministic: Camera + ICP)" and "K, pose".
+- **After:** first-frame depth plus intrinsics K lift points to 3D. For each timestep, a rigid transform T<sub>t</sub> is solved by minimizing reprojection error against the predicted 2D tracks ("e.g. with PnP solvers"). The end-effector plan is ā<sub>t</sub> = T<sub>t</sub>·e<sub>1</sub>. The paper never mentions ICP.
+- **Source:** [arXiv:2405.01527 HTML v2](https://arxiv.org/html/2405.01527v2), Sec. 3.
+
+#### 3. §10.2 Stage 3: kinematics and residual policy
+- **Before:** `action = forward_kinematics(geometry_to_pose(tracks)) + residual_policy(observation)`. Fig. 15 read "Forward Kinematics: Poses → Joint commands" and "Requires only 50-500 real demos."
+- **After:** a<sub>t</sub> = ā<sub>t</sub> + Δa<sub>t</sub>. The residual policy takes the current image, goal, tracks and open-loop plan. It is a DiT-style transformer predicting 4 steps, of which the first is executed. An IK controller maps poses to joints; mapping poses to joint commands is inverse, not forward, kinematics. It was trained on "∼400 trajectories overall" across 10 tasks in 3 locations.
+- **Source:** [arXiv:2405.01527 HTML v2](https://arxiv.org/html/2405.01527v2).
+
+#### 4. §10.2 Track2Act result (overclaim; replaced with the paper's numbers)
+- **Before:** "zero-shot generalization to unseen objects, scenes, embodiments. Empirically demonstrated on pick-and-place, stacking, cloth manipulation." Fig. 15's caption also claimed "zero-shot transfer to new objects and embodiments."
+- **After:** on a Boston Dynamics Spot, 25 tasks in 5 locations, 20 rollouts per level: Track2Act scored 70/60/55/40% across the four generalization levels (MG/G/CG/TG). The strongest baseline (hand-object-mask-conditioned BC) scored 70/40/25/20%, goal-conditioned BC 60/20/0/0%, and open-loop without the residual 35/25/30/25% (Table 2). Example tasks named in the paper are closing microwaves, pulling out drawers, flipping open toasters and pouring from jars. Pick-and-place, stacking and cloth manipulation do not appear. Cross-embodiment transfer is not tested: the residual is trained on Spot data. Citation added: Bharadhwaj, Mottaghi, Gupta, Tulsiani, ECCV 2024.
+- **Source:** [arXiv:2405.01527 HTML v2](https://arxiv.org/html/2405.01527v2) Table 2 and Fig. 1; [arXiv abstract](https://arxiv.org/abs/2405.01527).
+
+#### 5. Fig. 15 data-requirements line
+- **Before:** "Stage 1 (Tracking): Internet video (millions of frames, no labels)".
+- **After:** "Stage 1 (Track prediction): ~400,000 human + robot video clips, no action labels". The paper gives no frame count.
+- **Source:** as #1.
+
+#### 6. §10.3 VideoDex hardware
+- **Before:** "dexterous manipulation (human-like hands with 20+ DOF)".
+- **After:** the 16-DoF LEAP Hand on an xArm6 arm. The motivation is restated as the paper's own: real-world experience is limited by safety, time and hardware.
+- **Source:** [VideoDex PDF, arXiv:2212.04498](https://arxiv.org/pdf/2212.04498), Fig. 3 and Sec. 4.2, plus the abstract.
+
+#### 7. §10.3 VideoDex priors
+- **Before:** visual prior = "what does a good grasp look like visually?"; physical prior = "force/torque patterns, grasp stability cues, object properties."
+- **After:** visual prior = R3M's pretrained ResNet-18 encoder. Action prior = Epic-Kitchens hand and wrist motion re-targeted to the robot. Physical prior = Neural Dynamic Policies (a DMP-based second-order dynamical system). The paper uses no force/torque data.
+- **Source:** [arXiv:2212.04498 PDF](https://arxiv.org/pdf/2212.04498), Secs. 3.1, 4.1–4.3, Fig. 1.
+
+#### 8. §10.3 VideoDex pipeline
+- **Before:** "hand pose estimation (MediaPipe, etc.)"; "action distribution (VAE or diffusion)"; "Fine-tune on robot data (hundreds of real demos, not thousands)".
+- **After:** OpenPose crop → FrankMocap → MANO pose. Fingers are re-targeted via a learned energy-function mapping; the wrist via PnP plus ORB-SLAM3. The policy (R3M ResNet-18 → MLP → two NDPs) is pretrained with an L1 loss on 500–3000 Epic-Kitchens clips per task category, then trained on "about 120-175 demonstrations" per task and executed open-loop. There is no VAE or diffusion model.
+- **Source:** [arXiv:2212.04498 PDF](https://arxiv.org/pdf/2212.04498), Secs. 4.2–5, Algorithm 1.
+
+#### 9. §10.3 VideoDex result: "pivoting, in-hand reorientation with 10-100× fewer real demos" (removed)
+- **Before:** "real robot learns complex manipulation (pivoting, in-hand reorientation) with 10-100× fewer real demos."
+- **After:** the seven tasks are pick, rotate, open, cover, uncover, place and push. Held-out-object success, VideoDex vs. the best non-human-prior baseline (Table 1): pick 0.77 vs. 0.44, rotate 0.71 vs. 0.56, open 0.80 vs. 0.60, cover 0.63 vs. 0.58, place 0.80 vs. 0.50, uncover 0.92 vs. 0.91, push 1.00 vs. 1.00. For the 1-DoF gripper (Table 2), pick 0.77 vs. 0.71. The text now says the paper does not report a fewer-demos multiplier. Citation added: Shaw, Bahl, Pathak, CoRL 2022.
+- **Source:** [arXiv:2212.04498 PDF](https://arxiv.org/pdf/2212.04498), Tables 1–2, Fig. 5.
+
+#### 10. §10.3 "Instead of learning from scratch (requires thousands of real robot demos)" (removed)
+- **Before:** that sentence in "Why It Works".
+- **After:** removed; no source gives this count. Replaced by what the paper shows (the action prior initializes the wrist/hand trajectory) and its stated open-loop limitation (Sec. 7).
+- **Source:** [arXiv:2212.04498 PDF](https://arxiv.org/pdf/2212.04498), Fig. 6, Sec. 7.
+
+#### 11. §10.4 non-parametric policies "can outperform complex learned policies"
+- **Before:** "A simple non-parametric policy (e.g., nearest-neighbor or locally-weighted regression on learned features) can outperform complex learned policies if the features are good."
+- **After:** "can be competitive with end-to-end behavioral cloning", with VINN cited (Pari et al., RSS 2022): locally weighted nearest-neighbor regression on BYOL features.
+- **Source:** [arXiv:2112.01511](https://arxiv.org/abs/2112.01511), whose abstract says it is "competitive with end-to-end behavior cloning".
+
+#### 12. Fig. 16 "~100 demos" and "10× (100 demos vs. 1000)" (removed, 3 places)
+- **Before:** "Requires ~100 task-specific demos"; "Sample complexity 10× better (100 demos vs. 1000) by leveraging pre-trained vision"; caption "Result: 10× reduction in sample complexity."
+- **After:** "Task demos train only the head"; "robot demos only train the small head; visual features come from large-scale pretraining"; caption: the demos no longer have to teach the network to see. No source was cited for these numbers, and none could be found.
+- **Source:** none states the figure. Removed as unsourced.
+
+#### 13. §10.5 takeaway "Vision is solved" (removed)
+- **Before:** "Vision is solved; focus on action generation and planning."
+- **After:** "Pretrained vision is a strong starting point, not a solved problem: Week 11 shows how the pretraining objective changes what the features capture."
+- **Source:** an overclaim with no support. The artifact's own Week 11 (V-JEPA: image models score about 50 on SSv2 vs. 72.2 for V-JEPA) contradicts it.
+
+#### 14. §10.5 CLIP Wikipedia link (dead)
+- **Before:** `https://en.wikipedia.org/wiki/CLIP_(machine_learning)` returns HTTP 404.
+- **After:** `https://en.wikipedia.org/wiki/Contrastive_Language-Image_Pre-training`, which resolves to the CLIP article.
+- **Source:** both URLs fetched directly.
+
+#### 15. §10.5 DINOv2 Wikipedia link (dead and wrong concept)
+- **Before:** "DINOv2" linked to `https://en.wikipedia.org/wiki/Unified_robotic_computing_framework` (HTTP 404, unrelated title).
+- **After:** DINOv2 is unlinked, since `en.wikipedia.org/wiki/DINOv2` also returns 404. "self-supervised" now links to [Self-supervised learning](https://en.wikipedia.org/wiki/Self-supervised_learning).
+- **Source:** URLs fetched directly.
+
+#### 16. Glossary §D: Track2Act and Point Tracking entries
+- **Before:** "2D point tracking → 3D geometry → robot action … Internet video → tracks (stage 1)…"; Point Tracking "Self-supervised, no action labels."
+- **After:** predicted tracks → 3D rigid transforms → end-effector poses plus residual, with the ~400,000-clip and ~400-demo figures. Point tracking is labeled with CoTracker, then future tracks are predicted from current and goal images.
+- **Source:** as #1–#3.
+
+#### 17. Glossary §D: VideoDex entry
+- **Before:** "extract action/physical priors from human video. Initialize robot dexterous hand. Reduces real robot demos needed."
+- **After:** the three named priors (R3M visual, re-targeted Epic-Kitchens action, NDP physical), the 16-DoF LEAP Hand on xArm6, and ~120–175 robot demos per task.
+- **Source:** as #6–#8.
+
+(Self-check Q1 was reworded only to match #1, "predicted tracks … plus residual".)
+
+### Confirmed claims
+1. Track2Act authorship and venue: Bharadhwaj, Mottaghi, Gupta, Tulsiani, ECCV 2024 ([arXiv:2405.01527](https://arxiv.org/abs/2405.01527)).
+2. VideoDex authorship and venue: Shaw, Bahl, Pathak, CoRL 2022 ([arXiv:2212.04498](https://arxiv.org/abs/2212.04498)).
+3. Track2Act Stage 1 needs no action labels ([HTML v2](https://arxiv.org/html/2405.01527v2)).
+4. Track2Act Stage 2 is deterministic geometry with no learning (same).
+5. Track2Act's residual is a small learned correction on top of the geometric plan (same; "Ours" beats "actions, not residuals" 60 vs. 45 at level G).
+6. Feature quality can matter as much as the policy algorithm in visual IL (VINN, [arXiv:2112.01511](https://arxiv.org/abs/2112.01511)).
+7. CLIP is a joint vision + language model ([Wikipedia](https://en.wikipedia.org/wiki/Contrastive_Language-Image_Pre-training)).
+8. DINOv2 is self-supervised visual pretraining on curated images ([arXiv:2304.07193](https://arxiv.org/abs/2304.07193)).
+9. Thread check (spot-check): V-JEPA predicts hidden space-time regions, and V-JEPA 2-AC adds actions and is trained on internet video plus robot video. The abstract says "less than 62 hours of unlabeled robot videos from the Droid dataset" and over 1 million hours of internet video; the artifact's "62 hours" matches the paper body's "approximately 62 hours" ([arXiv:2506.09985](https://arxiv.org/abs/2506.09985)).
+
+### Unverifiable (left as-is)
+1. §10.4 "Result: fewer demonstrations needed, better generalization across scenes/objects" for representation-first learning. It is a generic claim with no single cited source; VINN supports it qualitatively but gives no general statement.
+2. Fig. 16 dimensions "φ(img) ∈ ℝ^768" and "Dense 128→A". These are illustrative sizes, not tied to any cited paper (768 is a ViT-B width).
+3. §10.1's split into three sub-problems (visual understanding, domain gap, action grounding). This is the notes' own framing, not a sourced claim.
+
+### Not covered
+K-VIL and "causal confusion in imitation learning" are named in `glossary.md`'s forward-looking Week 10 preview, but the artifact has no content on them, so there was nothing to audit.
+
+---
+
 ## Week 4: Diffusion Planning & World Models
 
 **Last audited:** 2026-10-27 (Week 4)
